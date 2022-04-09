@@ -1,7 +1,6 @@
 ############################################################
 import * as noble from "@noble/ed25519"
 import * as tbut from "thingy-byte-utils"
-# import * as tbut from "./byteutilsbrowser"
 
 crypto = window.crypto.subtle
 

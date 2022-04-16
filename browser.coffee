@@ -76,10 +76,10 @@ export sha512Bytes = (content) ->
 ############################################################
 # Hex Version
 export createKeyPair = ->
-    secretKey = noble.utils.randomPrivateKey()
-    publicKey = await noble.getPublicKey(secretKey)
-    secretKeyHex = tbut.bytesToHex(secretKey)
-    publicKeyHex = tbut.bytesToHex(publicKey)
+    secretKeyBytes = noble.utils.randomPrivateKey()
+    publicKeyBytes = await noble.getPublicKey(secretKeyBytes)
+    secretKeyHex = tbut.bytesToHex(secretKeyBytes)
+    publicKeyHex = tbut.bytesToHex(publicKeyBytes)
     return {secretKeyHex, publicKeyHex}
 
 export createSymKey = ->
@@ -87,13 +87,13 @@ export createSymKey = ->
     window.crypto.getRandomValues(keyAndIV)
     return tbut.bytesToHex(keyAndIV)
 
-export publicKey = (secretKey) ->
-    publicKey = await noble.getPublicKey(secretKey)
-    return tbut.bytesToHex(publicKey)
+export createPublicKey = (secretKeyHex) ->
+    publicKeyBytes = await noble.getPublicKey(secretKeyHex)
+    return tbut.bytesToHex(publicKeyBytes)
 
 export createKeyPairHex = createKeyPair
 export createSymKeyHex = createSymKey
-export publicKeyHex = publicKey
+export createPublicKeyHex = createPublicKey
 
 ############################################################
 # Byte Version
@@ -107,7 +107,7 @@ export createSymKeyBytes = ->
     window.crypto.getRandomValues(keyAndIV)
     return keyAndIV
 
-export publicKeyBytes = (secretKey) -> await noble.getPublicKey(secretKeyBytes)
+export createPublicKeyBytes = (secretKeyBytes) -> await noble.getPublicKey(secretKeyBytes)
 
 #endregion
 
@@ -212,7 +212,7 @@ export symmetricDecryptBytes = (gibbrishBytes, keyBytes) ->
 ############################################################
 # Hex Version
 export asymmetricEncryptOld = (content, publicKeyHex) ->
-    # a = Private Key
+    # a = Secret Key
     # k = sha512(a) -> hashToScalar
     # G = basePoint
     # B = kG = Public Key
@@ -248,15 +248,15 @@ export asymmetricEncryptOld = (content, publicKeyHex) ->
 
     return {referencePointHex, encryptedContentHex}
 
-export asymmetricDecryptOld = (secrets, privateKeyHex) ->
+export asymmetricDecryptOld = (secrets, secretKeyHex) ->
     AHex = secrets.referencePointHex || secrets.referencePoint
     gibbrishHex = secrets.encryptedContentHex || secrets.encryptedContent
     if !AHex? or !gibbrishHex? then throw new Error("Invalid secrets Object!")
-    # a = Private Key
+    # a = Secret Key
     # k = sha512(a) -> hashToScalar
     # G = basePoint
     # B = kG = Public Key
-    aBytes = tbut.hexToBytes(privateKeyHex)
+    aBytes = tbut.hexToBytes(secretKeyHex)
     kBigInt = hashToScalar(await sha512Bytes(aBytes))
     
     # {A,X} = secrets
@@ -286,12 +286,12 @@ export asymmetricEncrypt = (content, publicKeyHex) ->
 
     return {referencePointHex, encryptedContentHex}
 
-export asymmetricDecrypt = (secrets, privateKeyHex) ->
+export asymmetricDecrypt = (secrets, secretKeyHex) ->
     AHex = secrets.referencePointHex || secrets.referencePoint
     gibbrishHex = secrets.encryptedContentHex || secrets.encryptedContent
     if !AHex? or !gibbrishHex? then throw new Error("Invalid secrets Object!")
 
-    kA = await noble.getSharedSecret(privateKeyHex, AHex)
+    kA = await noble.getSharedSecret(secretKeyHex, AHex)
     symkey = await sha512Bytes(kA)
 
     gibbrishBytes = tbut.hexToBytes(gibbrishHex)
@@ -315,12 +315,12 @@ export asymmetricEncryptBytes = (content, publicKeyBytes) ->
 
     return {referencePointBytes, encryptedContentBytes}
 
-export asymmetricDecryptBytes = (secrets, privateKeyBytes) ->
+export asymmetricDecryptBytes = (secrets, secretKeyBytes) ->
     ABytes = secrets.referencePointBytes || secrets.referencePoint
     gibbrishBytes = secrets.encryptedContentBytes || secrets.encryptedContent
     if !ABytes? or !gibbrishBytes? then throw new Error("Invalid secrets Object!")
 
-    kABytes = await noble.getSharedSecret(privateKeyBytes, ABytes)
+    kABytes = await noble.getSharedSecret(secretKeyBytes, ABytes)
     symkeyBytes = await sha512Bytes(kABytes)
 
     content = await symmetricDecryptBytes(gibbrishBytes, symkeyBytes)

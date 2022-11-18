@@ -368,11 +368,13 @@ export createSharedSecretHash = (secretKeyHex, publicKeyHex, contextString = "")
     nBBytes = await noble.getSharedSecret(nBytes, BBytes)
 
     cBytes = tbut.utf8ToBytes(contextString)
-    console.log(typeof nBBytes)
-    console.log(typeof cBytes)
-    # seedBytes = Buffer.concat([nBBytes, cBytes])
+    
+    seedBytes = new Uint8Array(nBBytes.length + cBytes.length)
+    l = nBBytes.length
+    seedBytes[i] = byte for byte,i in nBBytes
+    seedBytes[l+i] = byte for byte,i in cBytes
 
-    sharedSecretBytes = sha512Bytes(seedBytes)
+    sharedSecretBytes = await sha512Bytes(seedBytes)
 
     sharedSecretHex = tbut.bytesToHex(sharedSecretBytes) 
     return sharedSecretHex
@@ -408,11 +410,14 @@ export referencedSharedSecretHash = (publicKeyHex, contextString = "") ->
     nBBytes = await noble.getSharedSecret(nBytes, BBytes)
 
     cBytes = tbut.utf8ToBytes(contextString)
-    console.log(typeof nBBytes)
-    console.log(typeof cBytes)
-    # seedBytes = Buffer.concat([nBBytes, cBytes])
+    
+    seedBytes = new Uint8Array(nBBytes.length + cBytes.length)
+    l = nBBytes.length
+    seedBytes[i] = byte for byte,i in nBBytes
+    seedBytes[l+i] = byte for byte,i in cBytes
 
-    sharedSecretBytes = sha512Bytes(seedBytes)
+
+    sharedSecretBytes = await sha512Bytes(seedBytes)
 
     sharedSecretHex = tbut.bytesToHex(sharedSecretBytes) 
     referencePointHex = tbut.bytesToHex(ABytes)
@@ -454,11 +459,14 @@ export createSharedSecretHashBytes = (secretKeyBytes, publicKeyBytes, contextStr
     nBBytes = await noble.getSharedSecret(nBytes, BBytes)
 
     cBytes = tbut.utf8ToBytes(contextString)
-    console.log(typeof nBBytes)
-    console.log(typeof cBytes)
-    # seedBytes = Buffer.concat([nBBytes, cBytes])
+    
+    seedBytes = new Uint8Array(nBBytes.length + cBytes.length)
+    l = nBBytes.length
+    seedBytes[i] = byte for byte,i in nBBytes
+    seedBytes[l+i] = byte for byte,i in cBytes
 
-    sharedSecretBytes = sha512Bytes(seedBytes)
+
+    sharedSecretBytes = await sha512Bytes(seedBytes)
 
     return sharedSecretBytes
 
@@ -489,11 +497,14 @@ export referencedSharedSecretHashBytes = (publicKeyBytes, contextString = "") ->
     nBBytes = await noble.getSharedSecret(nBytes, BBytes)
 
     cBytes = tbut.utf8ToBytes(contextString)
-    console.log(typeof nBBytes)
-    console.log(typeof cBytes)
-    # seedBytes = Buffer.concat([nBBytes, cBytes])
+    
+    seedBytes = new Uint8Array(nBBytes.length + cBytes.length)
+    l = nBBytes.length
+    seedBytes[i] = byte for byte,i in nBBytes
+    seedBytes[l+i] = byte for byte,i in cBytes
 
-    sharedSecretBytes = sha512Bytes(seedBytes)
+
+    sharedSecretBytes = await sha512Bytes(seedBytes)
 
     referencePointBytes = ABytes
     return { referencePointBytes, sharedSecretBytes }
@@ -525,7 +536,7 @@ export referencedSharedSecretRawBytes = (publicKeyBytes) ->
 export authCode = (seedHex, requestJSON) ->
     requestString = JSON.stringify(requestJSON)
     entropySource = seedHex + requestString
-    return sha256Hex(entropySource)
+    return await sha256Hex(entropySource)
     
 export authCodeHex = authCode
 
@@ -535,7 +546,7 @@ export authCodeBytes = (seedBytes, requestJSON) ->
     requestString = JSON.stringify(requestJSON)
     seedHex = tbut.bytesToHex(seedBytes)
     entropySource = seedHex + requestString
-    return sha256Bytes(entropySource)
+    return await sha256Bytes(entropySource)
 
 #endregion
 
@@ -547,7 +558,7 @@ export authCodeBytes = (seedBytes, requestJSON) ->
 export sessionKey = (seedHex, requestJSON) ->
     requestString = JSON.stringify(requestJSON)
     entropySource = seedHex+requestString
-    return sha512Hex(entropySource)
+    return await sha512Hex(entropySource)
 
 export sessionKeyHex = sessionKey
 
@@ -557,7 +568,7 @@ export sessionKeyBytes = (seedBytes, requestJSON) ->
     requestString = JSON.stringify(requestJSON)
     seedHex = tbut.bytesToHex(seedBytes)
     entropySource = seedHex+requestString
-    return sha512Bytes(entropySource)
+    return await sha512Bytes(entropySource)
 
 #endregion
 

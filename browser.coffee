@@ -211,6 +211,8 @@ export symmetricDecryptBytes = (gibbrishBytes, keyBytes) ->
 
 ############################################################
 # Hex Version
+
+############################################################
 export asymmetricEncryptOld = (content, publicKeyHex) ->
     # a = Secret Key
     # k = sha512(a) -> hashToScalar
@@ -272,6 +274,7 @@ export asymmetricDecryptOld = (secrets, secretKeyHex) ->
     content = await symmetricDecryptHex(gibbrishHex,symkey)
     return content
 
+############################################################
 export asymmetricEncrypt = (content, publicKeyHex) ->
     nBytes = noble.utils.randomPrivateKey()
     A = await noble.getPublicKey(nBytes)
@@ -300,6 +303,7 @@ export asymmetricDecrypt = (secrets, secretKeyHex) ->
 
 export asymmetricEncryptHex = asymmetricEncrypt
 export asymmetricDecryptHex = asymmetricDecrypt
+
 ############################################################
 # Byte Version
 export asymmetricEncryptBytes = (content, publicKeyBytes) ->
@@ -329,34 +333,12 @@ export asymmetricDecryptBytes = (secrets, secretKeyBytes) ->
 #endregion
 
 ############################################################
-#region salts
-export createRandomLengthSalt = ->
-    bytes = new Uint8Array(512)
-    loop
-        window.crypto.getRandomValues(bytes)
-        for byte,i in bytes when byte == 0
-            return tbut.bytesToUtf8(bytes.slice(0,i+1))        
-
-export removeSalt = (content) ->
-    for char,i in content when char == "\0"
-        return content.slice(i+1)
-    throw new Error("No Salt termination found!")    
-
-#endregion
-
-
-
-############################################################
-#region new Functions on v0.2
-
-############################################################
 #region referenced/shared secrets
 
 ############################################################
-#region Hex Versions
+# Hex Versions
 
 ############################################################
-# create shared secrets
 export createSharedSecretHash = (secretKeyHex, publicKeyHex, contextString = "") ->
     # n = SecretKey
     # A = referencePoint = nG
@@ -396,7 +378,6 @@ export createSharedSecretHashHex = createSharedSecretHash
 export createSharedSecretRawHex = createSharedSecretRaw
 
 ############################################################
-# create shared secrets with a new reference point
 export referencedSharedSecretHash = (publicKeyHex, contextString = "") ->
     # n = SecretKey
     # A = referencePoint = nG
@@ -441,13 +422,11 @@ export referencedSharedSecretRaw = (publicKeyHex) ->
 
 export referencedSharedSecretHashHex = referencedSharedSecretHash
 export referencedSharedSecretRawHex = referencedSharedSecretRaw
-#endregion
 
 ############################################################
-#region Bytes Versions
+# Bytes Versions
 
 ############################################################
-# create shared secrets
 export createSharedSecretHashBytes = (secretKeyBytes, publicKeyBytes, contextString = "") ->
     # n = SecretKey
     # A = referencePoint = nG
@@ -483,7 +462,6 @@ export createSharedSecretRawBytes = (secretKeyBytes, publicKeyBytes) ->
     return sharedSecretBytes
 
 ############################################################
-# create shared secrets with a new reference point
 export referencedSharedSecretHashBytes = (publicKeyBytes, contextString = "") ->
     # n = SecretKey
     # A = referencePoint = nG
@@ -524,56 +502,24 @@ export referencedSharedSecretRawBytes = (publicKeyBytes) ->
     referencePointBytes = ABytes
     return { referencePointBytes, sharedSecretBytes }
 
-#endregion
 
 #endregion
 
 ############################################################
-#region auth code
+#region salts
+export createRandomLengthSalt = ->
+    bytes = new Uint8Array(512)
+    loop
+        window.crypto.getRandomValues(bytes)
+        for byte,i in bytes when byte == 0
+            return tbut.bytesToUtf8(bytes.slice(0,i+1))        
 
-############################################################
-# Hex Version
-export authCode = (seedHex, requestJSON) ->
-    requestString = JSON.stringify(requestJSON)
-    entropySource = seedHex + requestString
-    return await sha256Hex(entropySource)
-    
-export authCodeHex = authCode
-
-############################################################
-# Byte Version
-export authCodeBytes = (seedBytes, requestJSON) ->
-    requestString = JSON.stringify(requestJSON)
-    seedHex = tbut.bytesToHex(seedBytes)
-    entropySource = seedHex + requestString
-    return await sha256Bytes(entropySource)
+export removeSalt = (content) ->
+    for char,i in content when char == "\0"
+        return content.slice(i+1)
+    throw new Error("No Salt termination found!")    
 
 #endregion
-
-############################################################
-#region session key
-
-############################################################
-# Hex Version
-export sessionKey = (seedHex, requestJSON) ->
-    requestString = JSON.stringify(requestJSON)
-    entropySource = seedHex+requestString
-    return await sha512Hex(entropySource)
-
-export sessionKeyHex = sessionKey
-
-############################################################
-# Byte Version
-export sessionKeyBytes = (seedBytes, requestJSON) ->
-    requestString = JSON.stringify(requestJSON)
-    seedHex = tbut.bytesToHex(seedBytes)
-    entropySource = seedHex+requestString
-    return await sha512Bytes(entropySource)
-
-#endregion
-
-#endregion
-
 
 
 #endregion

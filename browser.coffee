@@ -172,6 +172,7 @@ export symmetricDecrypt = (gibbrishHex, keyHex) ->
         iv: ivBytes
 
     saltedContent = await crypto.decrypt(algorithm, keyObjHex, gibbrishBytes)
+    saltedContent = new Uint8Array(saltedContent)
     return unsaltContent(saltedContent)
 
 export symmetricEncryptHex = symmetricEncrypt
@@ -202,6 +203,7 @@ export symmetricDecryptBytes = (gibbrishBytes, keyBytes) ->
         iv: ivBytes
 
     saltedContent = await crypto.decrypt(algorithm, keyObjBytes, gibbrishBytes)
+    saltedContent = new Uint8Array(saltedContent)
     return unsaltContent(saltedContent)
 
 #endregion
@@ -561,7 +563,7 @@ export saltContent = (content) ->
     content = tbut.utf8ToBytes(content)
     contentLength = content.length
 
-    sizeRand = Uint8Array[1]
+    sizeRand = new Uint8Array(1)
     window.crypto.getRandomValues(sizeRand)
     saltLength = 33 + (sizeRand[0] & 127 )
     salt = new Uint8Array(saltLength)

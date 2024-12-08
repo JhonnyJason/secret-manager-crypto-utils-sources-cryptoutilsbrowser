@@ -374,6 +374,11 @@ export diffieHellmanSecretHash = (secretKeyHex, publicKeyHex, contextString = ""
     sharedSecretHex = await sha512Hex(seedBytes)
     return sharedSecretHex
 
+export diffieHellmanSecretHashHex = diffieHellmanSecretHash
+export createSharedSecretHash = diffieHellmanSecretHash
+export createSharedSecretHashHex = diffieHellmanSecretHash
+
+
 export diffieHellmanSecretRaw = (secretKeyHex, publicKeyHex) ->
     # a = our SecretKey
     # k = sha512(a) -> hashToScalar (scalar for multiplication)
@@ -389,8 +394,10 @@ export diffieHellmanSecretRaw = (secretKeyHex, publicKeyHex) ->
     sharedSecretHex = tbut.bytesToHex(sharedSecretBytes) 
     return sharedSecretHex
 
-export diffieHellmanSecretHashHex = diffieHellmanSecretHash
 export diffieHellmanSecretRawHex = diffieHellmanSecretRaw
+export createSharedSecretRaw = diffieHellmanSecretRaw
+export createSharedSecretRawHex = diffieHellmanSecretRaw
+
 
 ############################################################
 export elGamalSecretHash = (publicKeyHex, contextString = "") ->
@@ -430,6 +437,13 @@ export elGamalSecretHash = (publicKeyHex, contextString = "") ->
     referencePointHex = tbut.bytesToHex(ABytes)
     return { referencePointHex, sharedSecretHex }
 
+export elGamalSecretHashHex = elGamalSecretHash
+export referencedSharedSecretHash = elGamalSecretHash
+export referencedSharedSecretHashHex = elGamalSecretHash
+export referencedSecretHash = elGamalSecretHash
+export referencedSecretHashHex = elGamalSecretHash
+
+
 export elGamalSecretRaw = (publicKeyHex) ->
     # a = Secret Key of target user
     # k = sha512(a) -> hashToScalar (scalar for multiplication)
@@ -459,8 +473,12 @@ export elGamalSecretRaw = (publicKeyHex) ->
     referencePointHex = tbut.bytesToHex(ABytes)
     return { referencePointHex, sharedSecretHex }
 
-export elGamalSecretHashHex = elGamalSecretHash
 export elGamalSecretRawHex = elGamalSecretRaw
+export referencedSharedSecretRaw = elGamalSecretRaw
+export referencedSharedSecretRawHex = elGamalSecretRaw
+export referencedSecretRaw = elGamalSecretRaw
+export referencedSecretRawHex = elGamalSecretRaw
+
 
 ############################################################
 # Bytes Versions
@@ -489,6 +507,9 @@ export diffieHellmanSecretHashBytes = (secretKeyBytes, publicKeyBytes, contextSt
     sharedSecretBytes = await sha512Bytes(seedBytes)
     return sharedSecretBytes
 
+export sharedSecretHashBytes = diffieHellmanSecretHashBytes
+
+
 export diffieHellmanSecretRawBytes = (secretKeyBytes, publicKeyBytes) ->
     # a = our SecretKey
     # k = sha512(a) -> hashToScalar (scalar for multiplication)
@@ -502,6 +523,9 @@ export diffieHellmanSecretRawBytes = (secretKeyBytes, publicKeyBytes) ->
     kB = B.multiply(kBigInt)
     kBBytes = kB.toRawBytes()
     return kBBytes
+
+export sharedSecretRawBytes = diffieHellmanSecretRawBytes
+
 
 ############################################################
 export elGamalSecretHashBytes = (publicKeyBytes, contextString = "") ->
@@ -542,6 +566,10 @@ export elGamalSecretHashBytes = (publicKeyBytes, contextString = "") ->
     referencePointBytes = ABytes
     return { referencePointBytes, sharedSecretBytes }
 
+export referencedSharedSecretHashBytes = elGamalSecretHashBytes
+export referencedSecretHashBytes = elGamalSecretHashBytes
+
+
 export elGamalSecretRawBytes = (publicKeyBytes) ->
     # a = Secret Key of target user
     # k = sha512(a) -> hashToScalar (scalar for multiplication)
@@ -571,6 +599,10 @@ export elGamalSecretRawBytes = (publicKeyBytes) ->
     sharedSecretBytes = lBBytes
     referencePointBytes = ABytes
     return { referencePointBytes, sharedSecretBytes }
+
+export referencedSharedSecretRawBytes = elGamalSecretRawBytes
+export referencedSecretRawBytes = elGamalSecretRawBytes
+
 
 #endregion
 
